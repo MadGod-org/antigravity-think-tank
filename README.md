@@ -13,6 +13,17 @@ Instead of firing off loose prompts to isolated subagents and crossing your fing
 
 ---
 
+### 🌐 Two Specialized Editions of Think Tank
+
+Think Tank is available in two distinct, platform-optimized editions:
+
+| Edition | Primary Target | Dashboard & Runtime | Host Integration | Repository |
+|---|---|---|---|---|
+| **Google Antigravity Edition** *(This Repo)* | Google Antigravity | Node Sidecar Webview + FastAPI WebSocket Backend (127.0.0.1:8780) | Antigravity Sidecar SDK, SQLite WAL Event Store, Lifecycle Hook | [MadGod-org/antigravity-think-tank](https://github.com/MadGod-org/antigravity-think-tank) |
+| **OpenAI Codex Edition** | OpenAI Codex | 5-Tab Live SSE Dashboard (127.0.0.1:8899) + App-Server Client | Native Codex Plugin (plugin.json), 25 Specialist Profiles, Substrate MCP | [MadGod-org/codex-think-tank](https://github.com/MadGod-org/codex-think-tank) |
+
+---
+
 ## 🎬 3D Motion Graphics Promo Video
 
 Watch the official 36-second 1080p 3D motion graphics teaser showcasing the 21 autonomous subagents, smart triage gate, 7-round supervisory council consensus, and live WebSocket chatroom:
