@@ -13,6 +13,22 @@ Instead of firing off loose prompts to isolated subagents and crossing your fing
 
 ---
 
+## 🎬 3D Motion Graphics Promo Video
+
+Watch the official 36-second 1080p 3D motion graphics teaser showcasing the 21 autonomous subagents, smart triage gate, 7-round supervisory council consensus, and live WebSocket chatroom:
+
+<div align="center">
+  <a href="media/thinktank-promo-1080p.mp4">
+    <img src="media/poster.png" alt="Antigravity Think Tank 3D Motion Promo" width="880">
+  </a>
+  <p>
+    🎬 <b><a href="media/thinktank-promo-1080p.mp4">▶ Watch Promo Video (media/thinktank-promo-1080p.mp4)</a></b> &nbsp;•&nbsp;
+    📦 <b><a href="https://github.com/MadGod-org/antigravity-think-tank/releases/download/v1.0.0/thinktank-promo-1080p.mp4">Direct 1080p Download (Release v1.0.0)</a></b>
+  </p>
+</div>
+
+---
+
 ## ⚡ What Makes Think Tank Different?
 
 * **Live Swarm Feed & Inter-Agent Chat**: Watch subagents talk to each other in real time like an active Slack or Discord channel. No mystery handoffs or invisible handwaves—you see who delegated what, what tools were called, and the exact response.
