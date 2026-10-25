@@ -1,0 +1,38 @@
+[
+  {
+    "claim_id": "CLM-001",
+    "claim": "A cache change may be related to checkout errors.",
+    "source_id": "SRC-EX-001",
+    "source_locator": "tests/sample.log:12",
+    "observed_at": "2026-10-24T10:00:00Z",
+    "priority": "P1",
+    "verification": "UNVERIFIED",
+    "sensitivity": "internal",
+    "owner": "data-intelligence-curator",
+    "verifier": null,
+    "verdict": "NOT_CHECKED",
+    "notes": "Synthetic example; reproduction needed.",
+    "evidence_refs": [
+      "SRC-EX-001"
+    ],
+    "measured_tokens": null
+  },
+  {
+    "claim_id": "CLM-002",
+    "claim": "A document contains five sections.",
+    "source_id": "SRC-EX-002",
+    "source_locator": "fixtures/document.md:1-10",
+    "observed_at": "2026-10-24T10:00:00Z",
+    "priority": "P3",
+    "verification": "VERIFIED",
+    "sensitivity": "public",
+    "owner": "data-intelligence-curator",
+    "verifier": "evidence-critical-reviewer",
+    "verdict": "SUPPORTED",
+    "notes": "Synthetic independent section count.",
+    "evidence_refs": [
+      "SRC-EX-002"
+    ],
+    "measured_tokens": null
+  }
+]

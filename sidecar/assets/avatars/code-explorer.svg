@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Code Explorer profile avatar">
+  <title>Code Explorer — magnifier avatar</title>
+  <circle cx="64" cy="64" r="60" fill="#5276B8"/>
+  <circle cx="57" cy="55" r="24" fill="none" stroke="#fff" stroke-width="7"/>
+  <path d="m75 73 22 22" stroke="#fff" stroke-linecap="round" stroke-width="9"/>
+  <path d="m50 47-8 8 8 8m14-16 8 8-8 8" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+</svg>

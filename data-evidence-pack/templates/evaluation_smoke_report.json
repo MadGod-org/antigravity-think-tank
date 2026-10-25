@@ -1,0 +1,10 @@
+{
+  "counts": {
+    "PASS": 0,
+    "FAIL": 0,
+    "NOT_TESTED": 2,
+    "INVALID": 0
+  },
+  "evaluated": 0,
+  "note": "A matching status is a smoke-check only, not proof of substantive claim accuracy."
+}

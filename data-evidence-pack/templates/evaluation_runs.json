@@ -1,0 +1,20 @@
+[
+  {
+    "case_id": "SYN-001",
+    "agent": "evidence-critical-reviewer",
+    "expected_status": "UNVERIFIED",
+    "observed_status": null,
+    "tested": false,
+    "evidence_refs": [],
+    "notes": "Not run against Antigravity"
+  },
+  {
+    "case_id": "SYN-002",
+    "agent": "requirements-auditor",
+    "expected_status": "UNKNOWN",
+    "observed_status": null,
+    "tested": false,
+    "evidence_refs": [],
+    "notes": "Not run against Antigravity"
+  }
+]

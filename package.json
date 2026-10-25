@@ -1,0 +1,21 @@
+{
+  "name": "antigravity-think-tank",
+  "version": "1.0.0",
+  "description": "Autonomous multi-agent command room and real-time swarm orchestrator for Google Antigravity",
+  "main": "sidecar/main.mjs",
+  "type": "module",
+  "scripts": {
+    "test": "node sidecar/tests/ui_activity.test.cjs && node sidecar/tests/ui_i18n.test.cjs && node sidecar/tests/ui-contract.test.mjs",
+    "test:activity": "node sidecar/tests/ui_activity.test.cjs",
+    "test:i18n": "node sidecar/tests/ui_i18n.test.cjs",
+    "test:contract": "node sidecar/tests/ui-contract.test.mjs",
+    "sidecar:start": "node sidecar/main.mjs",
+    "backend:start": "uvicorn backend.app:app --host 127.0.0.1 --port 8780"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MadGod-org/antigravity-think-tank.git"
+  },
+  "author": "MadGod-org",
+  "license": "MIT"
+}

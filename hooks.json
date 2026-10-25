@@ -1,0 +1,24 @@
+{
+  "thinktank-live-sync": {
+    "enabled": true,
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "python tools/thinktank_antigravity_hook.py pre-invocation",
+        "timeout": 5
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python tools/thinktank_antigravity_hook.py post-tool-use",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}

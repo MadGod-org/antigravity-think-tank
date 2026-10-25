@@ -1,0 +1,9 @@
+﻿agent,primary_skill,function,model,permission,note
+data-intelligence-curator,data-intake-tiering,"Document intake, classification, data ledger",flash,read+sandbox-local,Independent review required
+evidence-critical-reviewer,evidence-verification,Claim-level independent critique,pro,read-only,Requests Research Director through parent
+requirements-auditor,requirements-traceability,Acceptance tests and scope coverage,inherit,read-only,Cannot authorize delivery
+context-memory-curator,context-cost-control,Compact traceable context transfer,flash,read-only,No secret persistence
+performance-cost-analyst,context-cost-control,Measured efficiency and duplicate-work review,flash,read-only,No estimated savings as measured
+existing-team-manager,varies / already installed,Dispatch and plan,inherit,depends on existing plugin,Not included; do not overwrite
+existing-research-director,varies / already installed,Authorized deep research,inherit,depends on existing skill,Not included; check availability
+existing-agent-evaluator,agent-output-scoring,Live agent eval run owner,inherit,depends on existing plugin,Not included; evidence mandatory

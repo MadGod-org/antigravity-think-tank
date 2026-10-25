@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Designer Solver profile avatar">
+  <title>Designer/Solver — four-point spark avatar</title>
+  <circle cx="64" cy="64" r="60" fill="#C17642"/>
+  <path d="M64 26 73 55l29 9-29 9-9 29-9-29-29-9 29-9 9-29Z" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="6"/>
+  <circle cx="64" cy="64" r="7" fill="#fff"/>
+  <path d="m94 27 3 9 9 3-9 3-3 9-3-9-9-3 9-3 3-9Z" fill="#fff"/>
+</svg>

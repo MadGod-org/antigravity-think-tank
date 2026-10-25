@@ -1,0 +1,15 @@
+﻿name,type,value,url,trust_label,fit_1_to_5
+Google Antigravity — Custom Subagents,official platform docs,"Runtime metadata, tool allowlist, model tiers and discovery",https://www.antigravity.google/docs/subagents/,Official,5
+Google Antigravity — Skills,official platform docs,Skill directories and frontmatter,https://antigravity.google/docs/skills,Official,5
+Docling — Document Conversion Skill,Agent Skill + CLI,Parse PDF/DOCX/PPTX/XLSX into structured text/JSON,https://github.com/docling-project/docling/blob/main/docling/.agents/skills/docling/SKILL.md,Maintainer skill,5
+K-Dense — Exploratory Data Analysis,Agent Skill,Quality profiling for local tabular/scientific data,https://github.com/K-Dense-AI/scientific-agent-skills/blob/main/skills/exploratory-data-analysis/SKILL.md,Maintainer skill,5
+K-Dense — Scientific Critical Thinking,Agent Skill,"Methodological critique, confounders and claims",https://github.com/K-Dense-AI/scientific-agent-skills/blob/main/skills/scientific-critical-thinking/SKILL.md,Maintainer skill,5
+K-Dense — Peer Review,Agent Skill,Structured review of authorized materials,https://github.com/K-Dense-AI/scientific-agent-skills/blob/main/skills/peer-review/SKILL.md,Maintainer skill,4
+Fact Check Skill — petar-nauka,Agent Skill,"Evidence ledger, claim decomposition, provenance",https://github.com/petar-nauka/fact-check-skill/blob/main/SKILL.md,"Independent, small project",4
+Superpowers — Verification Before Completion,Agent Skill,Fresh evidence before completion claims,https://github.com/obra/superpowers/blob/main/skills/verification-before-completion/SKILL.md,Popular community skill,5
+Superpowers — Subagent Driven Development,Agent Skill,"Delegation, independent task review",https://github.com/obra/superpowers/blob/main/skills/subagent-driven-development/SKILL.md,Popular community skill,4
+Anthropic — Skill Creator,Agent Skill,Design and compare skills with evals,https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md,Vendor maintained,5
+Promptfoo — Evals,Agent Skill + CLI,Behavioral regression evals and objective assertions,https://github.com/promptfoo/promptfoo/blob/main/plugins/promptfoo/skills/promptfoo-evals/SKILL.md,Maintainer skill,5
+DeepEval,Evaluation framework,Component/trajectory/end-to-end evaluation,https://github.com/confident-ai/deepeval,Maintainer framework,4
+Arize Phoenix,Observability,"Tracing, dataset curation and experiments",https://github.com/Arize-ai/phoenix,Maintainer framework,4
+Antigravity native research subagent,Built-in platform agent,Codebase search and structural navigation,https://www.antigravity.google/docs/subagents/,Official built-in,5

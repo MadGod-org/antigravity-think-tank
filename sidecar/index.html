@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>اتاق فکر (Think Tank)</title>
+  <link rel="stylesheet" href="fonts.css">
+  <link rel="stylesheet" href="/fonts.css">
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="/app.css">
+  <link rel="stylesheet" href="roles.css">
+  <link rel="stylesheet" href="/roles.css">
+  <script src="/i18n.js" defer></script>
+  <script src="/activity.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="پیمایش اتاق فکر">
+      <a class="brand" href="#overview" aria-label="اتاق فکر (Think Tank)، نمای کلی">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span><strong>اتاق فکر</strong><small>Think Tank · هم‌فکری زنده</small></span>
+      </a>
+      <button id="new-thread" class="new-thread-button" type="button"><span aria-hidden="true">＋</span> گفت‌وگوی تازه</button>
+      <nav class="primary-nav" aria-label="بخش‌ها">
+        <button class="nav-item active" type="button" data-tab="overview"><span class="nav-icon">◫</span><span>نمای کلی</span></button>
+        <button class="nav-item" type="button" data-tab="conversations"><span class="nav-icon">▤</span><span>گفت‌وگوها</span><span id="thread-count" class="nav-count">۰</span></button>
+        <button class="nav-item" type="button" data-tab="team"><span class="nav-icon">♧</span><span>اعضای تیم</span></button>
+        <button class="nav-item" type="button" data-tab="activity"><span class="nav-icon">⌁</span><span>جریان کار</span></button>
+        <button class="nav-item" type="button" data-tab="settings"><span class="nav-icon">⚙</span><span>تنظیمات</span></button>
+      </nav>
+      <div class="sidebar-section">
+        <div class="section-label"><span>گفت‌وگوهای ساخته‌شده از پنل</span><span class="section-rule"></span></div>
+        <div id="thread-list" class="thread-list"><div class="sidebar-empty">هنوز گفت‌وگویی ساخته نشده</div></div>
+      </div>
+      <div class="sidebar-footer">
+        <div class="connection-row"><span id="connection-dot" class="connection-dot"></span><span id="connection-label">در حال اتصال به اتاق فکر</span></div>
+        <span class="sidebar-version">نسخهٔ رابط ۰٫۲</span>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>اتاق فکر</span><span class="crumb-separator">/</span><strong id="breadcrumb-current">نمای کلی</strong></div>
+        <div class="topbar-actions">
+          <span class="live-pill"><i></i> جریان زنده</span>
+          <button id="language-toggle" class="language-toggle" type="button" aria-label="تغییر زبان به انگلیسی" title="تغییر زبان پنل">English</button>
+          <button id="theme-toggle" class="icon-button" type="button" aria-label="تغییر پوسته به روشن" title="تغییر پوسته">◐</button>
+          <span class="runtime-chip"><span class="runtime-dot"></span> Think Tank Hub</span>
+        </div>
+      </header>
+
+      <div id="connection-alert" class="connection-alert hidden" role="status"></div>
+
+      <section id="host-thread-context" class="host-thread-context hidden" aria-labelledby="host-thread-context-title">
+        <span class="host-context-mark" aria-hidden="true">◈</span>
+        <div class="host-context-copy">
+          <span class="host-context-label">این فعالیت در گفت‌وگوی جاری اتاق فکر است</span>
+          <strong id="host-thread-context-title" dir="auto"></strong>
+          <small id="host-thread-context-id" dir="ltr"></small>
+        </div>
+        <div class="host-context-actions"><span class="host-context-badge">نشست جاری</span><button id="host-context-open-conversations" class="secondary-button" type="button">دیدن گفت‌وگوهای اتاق</button></div>
+      </section>
+
+      <section id="tab-overview" class="tab-panel active" aria-labelledby="overview-title">
+        <div class="welcome-row">
+          <div>
+            <p class="eyebrow">اتاق فکر زنده و پیوسته</p>
+            <h1 id="overview-title">هم‌فکری پروژه، با جریان واقعی</h1>
+            <p class="welcome-copy">گفت‌وگوها، پیام‌ها، اجرای ابزارها و وضعیت زیرعامل‌ها به صورت زنده ثبت می‌شوند؛ این پنل رویداد ساختگی نشان نمی‌دهد.</p>
+          </div>
+          <div class="connection-card"><span class="connection-orbit"><span></span></span><div><small>وضعیت اتصال</small><strong id="overview-connection">در حال بررسی</strong><span id="runtime-version">Think Tank زنده</span></div></div>
+        </div>
+
+        <div class="metric-grid">
+          <article class="metric-card"><div class="metric-icon accent-teal">▤</div><div><span>گفت‌وگوهای ثبت‌شده</span><strong id="metric-threads">۰</strong><small>فقط گفت‌وگوهایی که از این اتاق فکر ساخته شده‌اند</small></div></article>
+          <article class="metric-card"><div class="metric-icon accent-violet">♧</div><div><span>زیرعامل‌های فعال</span><strong id="metric-agents">۰</strong><small>از رویدادهای واقعی همکاری ساب‌ایجنت‌ها</small></div></article>
+          <article class="metric-card"><div class="metric-icon accent-amber">⌁</div><div><span>رویدادهای جریان پنل</span><strong id="metric-events">۰</strong><small>پیام، ابزار، بازبینی و وضعیت رسیده از زیرعامل‌ها</small></div></article>
+          <article class="metric-card"><div class="metric-icon accent-blue">⏱</div><div><span>سقف دور هر نقش</span><strong id="metric-rounds">۵۰</strong><small>قابل تنظیم؛ سقف حداکثر است، نه سهمیهٔ مصرف</small></div></article>
+        </div>
+
+        <div class="overview-grid">
+          <article class="panel-card start-card">
+            <div class="panel-heading"><div><p class="eyebrow">شروع کار</p><h2>یک گفت‌وگوی تازه بساز</h2></div><span class="heading-icon">✳</span></div>
+            <form id="create-thread-form" class="task-form">
+              <label>عنوان گفت‌وگو <input name="title" type="text" maxlength="120" placeholder="مثلاً پروژهٔ فروشگاه · بررسی همگام‌سازی"></label>
+              <label>مسیر پروژه <input name="cwd" type="text" dir="ltr" required placeholder="C:\Users\you\project"></label>
+              <label>دسترسی فایل‌ها
+                <select name="sandbox">
+                  <option value="inherit" selected>طبق تنظیم پیش‌فرض</option>
+                  <option value="read-only">فقط‌خواندنی</option>
+                  <option value="workspace-write">نوشتن فقط در پوشهٔ پروژه</option>
+                </select>
+                <small class="field-hint">این انتخاب فقط برای همین گفت‌وگوست؛ تنظیم تأییدهای امنیتی هم برقرار می‌ماند.</small>
+              </label>
+              <label>شرح کار <textarea name="task" rows="4" required maxlength="20000" placeholder="هدف، زمینه و نتیجه‌ای که انتظار داری را بنویس…"></textarea></label>
+              <div class="form-footer"><span>ابزارها و تغییرات از سیاست تأیید و حاکمیت پیروی می‌کنند.</span><button class="primary-button" type="submit"><span>ساخت گفت‌وگو</span><span aria-hidden="true">←</span></button></div>
+              <p id="create-error" class="form-error" role="alert"></p>
+            </form>
+          </article>
+          <article class="panel-card flow-card">
+            <div class="panel-heading"><div><p class="eyebrow">روند اجرا</p><h2>از درخواست تا بازبینی</h2></div><span class="heading-icon">⌁</span></div>
+            <ol class="flow-list">
+              <li><span class="flow-number">۱</span><div><strong>تقسیم کار</strong><p>عامل اصلی بخش‌های مستقل را به زیرعامل‌ها می‌سپارد.</p></div><span class="flow-status">با رخداد واقعی</span></li>
+              <li><span class="flow-number">۲</span><div><strong>هم‌کاری و اجرا</strong><p>پیام‌ها و فراخوانی ابزارها به محض دریافت نمایش داده می‌شوند.</p></div><span class="flow-status">جریان زنده</span></li>
+              <li><span class="flow-number">۳</span><div><strong>بازبینی مدیریتی</strong><p>پیش از تحویل، نتیجه و دلیل‌های موافق و مخالف ثبت می‌شوند.</p></div><span class="flow-status">درخواست از عامل</span></li>
+              <li><span class="flow-number">۴</span><div><strong>تصمیم با اطمینان پایین</strong><p>اگر برآورد عامل زیر ۹۵٪ باشد، ادامه یا توقف را از کاربر می‌پرسد.</p></div><span class="flow-status">نیازمند کاربر</span></li>
+            </ol>
+            <p class="note-line">عدد اطمینان، برآورد خوداظهاری عامل است و احتمال کالیبره‌شده نیست.</p>
+          </article>
+        </div>
+
+        <section id="overview-subtasks-panel" class="panel-card subtasks-board" aria-labelledby="subtasks-board-title">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">ساختار شکست کار (WBS) و هماهنگی ساب‌ایجنت‌ها</p>
+              <h2 id="subtasks-board-title">بورد تقسیم کار و پیشرفت پروژه</h2>
+            </div>
+            <div class="subtasks-summary-pills">
+              <span class="subtask-metric-pill"><strong id="subtask-progress-pct">۰٪</strong> پیشرفت کل</span>
+              <span class="subtask-metric-pill"><strong id="subtask-done-count">۰</strong> از <strong id="subtask-total-count">۰</strong> تسک تکمیل‌شده</span>
+              <button id="toggle-assign-subtask" class="secondary-button" type="button">＋ واگذاری تسک جدید</button>
+            </div>
+          </div>
+          <div class="subtasks-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="subtasks-progressbar">
+            <div id="subtasks-progress-fill" class="subtasks-progress-fill" style="width: 0%;"></div>
+          </div>
+          <form id="assign-subtask-form" class="assign-subtask-form hidden">
+            <input name="title" type="text" required maxlength="180" placeholder="عنوان تسک یا زیربخش پروژه (مثلاً: ممیزی امنیتی API یا طراحی کامپوننت)…">
+            <select name="assignee" id="subtask-assignee-select" required>
+              <option value="team-manager">مدیر تیم و هماهنگ‌کننده (team-manager)</option>
+              <option value="council-architect">معمار ارشد شورا (council-architect)</option>
+              <option value="council-critic">منتقد و تحلیل‌گر ریسک (council-critic)</option>
+              <option value="ui-frontend-designer">معمار رابط کاربری (ui-frontend-designer)</option>
+              <option value="backend-auditor">ممیز بک‌اند و امنیت (backend-auditor)</option>
+              <option value="code-reviewer">بازبین کد (code-reviewer)</option>
+              <option value="qa-reviewer">بازبین کیفیت و تست (qa-reviewer)</option>
+              <option value="visual-qa">بازبین بصری و دسترس‌پذیری (visual-qa)</option>
+              <option value="integration-reviewer">بازبین یکپارچگی (integration-reviewer)</option>
+              <option value="research-scout">پژوهشگر مستندات (research-scout)</option>
+              <option value="wp_technical_operator">اپراتور فنی وردپرس (wp_technical_operator)</option>
+              <option value="ecommerce_seo_operator">متخصص سئو فروشگاهی (ecommerce_seo_operator)</option>
+              <option value="data-intelligence-curator">کیوریتور داده و شواهد (data-intelligence-curator)</option>
+              <option value="evidence-critical-reviewer">بازبین نقاد شواهد (evidence-critical-reviewer)</option>
+              <option value="requirements-auditor">ممیز نیازمندی‌ها (requirements-auditor)</option>
+              <option value="context-memory-curator">کیوریتور حافظه و کانتکست (context-memory-curator)</option>
+              <option value="performance-cost-analyst">تحلیل‌گر کارایی و هزینه (performance-cost-analyst)</option>
+            </select>
+            <select name="priority">
+              <option value="HIGH">اولویت بالا</option>
+              <option value="NORMAL" selected>اولویت عادی</option>
+              <option value="CRITICAL">فوری / حیاتی</option>
+            </select>
+            <input name="deliverable" type="text" maxlength="160" placeholder="خروجی مورد انتظار (Deliverable)…">
+            <button class="primary-button" type="submit">ثبت و ارجاع</button>
+          </form>
+          <div id="overview-subtasks-list" class="subtasks-grid">
+            <div class="chat-pane-empty">هنوز تسک خردشده‌ای برای این پروژه ثبت نشده است. مدیر تیم یا شما می‌توانید بخش‌های کار را به ساب‌ایجنت‌ها واگذار کنید.</div>
+          </div>
+        </section>
+      </section>
+
+      <section id="tab-conversations" class="tab-panel" aria-labelledby="conversations-title" hidden>
+        <div class="page-heading"><div><p class="eyebrow">گفت‌وگوی جاری و زیرعامل‌ها</p><h1 id="conversations-title">گفت‌وگوها</h1><p>نام گفت‌وگوی اصلی بالا مشخص است؛ فهرست کنار صفحه گفت‌وگوهای ساخته‌شده در همین نشست را نشان می‌دهد.</p></div><button class="secondary-button" type="button" data-action="new-thread">＋ گفت‌وگوی تازه</button></div>
+        <div class="conversation-layout">
+          <aside class="conversation-rail">
+            <section id="host-thread-reference" class="host-thread-reference hidden" aria-labelledby="host-thread-reference-title">
+              <span class="host-reference-label">گفت‌وگوی اصلی این فعالیت</span><strong id="host-thread-reference-title" dir="auto"></strong><small id="host-thread-reference-id" dir="ltr"></small><span class="host-reference-note">پیام‌های این گفت‌وگوی اصلی در نشست ثبت می‌شوند؛ فهرست زیر فقط مکالمه‌های همین نشست میزبان را دارد.</span>
+            </section>
+            <div class="rail-heading"><strong>گفت‌وگوهای ساخته‌شده در پنل</strong><span id="rail-count">۰</span></div><div id="conversation-rail-list" class="conversation-rail-list"></div>
+          </aside>
+          <section class="chat-panel" aria-label="نمای مکالمه">
+            <div id="chat-empty" class="chat-empty"><div class="empty-glyph">▤</div><h2>گفت‌وگویی انتخاب نشده</h2><p>یک گفت‌وگوی تازه بساز یا از فهرست کناری یکی را انتخاب کن.</p></div>
+            <div id="chat-active" class="chat-active hidden">
+              <div class="chat-header"><div><span id="chat-project" class="chat-project">پروژه</span><h2 id="chat-title">گفت‌وگو</h2><div id="chat-members" class="chat-members"></div></div><div class="chat-tools"><span id="chat-status" class="status-pill">آماده</span><button id="interrupt-thread" class="icon-button" type="button" title="توقف کار جاری" aria-label="توقف کار جاری">■</button></div></div>
+              <div class="chat-view-controls">
+                <div class="chat-view-switch" role="group" aria-label="بخش‌های این گفت‌وگو">
+                  <button type="button" data-chat-view="messages" aria-pressed="true">پیام‌ها</button>
+                  <button type="button" data-chat-view="subtasks" aria-pressed="false">تقسیم کار <span id="chat-subtask-count">۰</span></button>
+                  <button type="button" data-chat-view="actions" aria-pressed="false">اقدام‌ها <span id="chat-action-count">۰</span></button>
+                </div>
+                <p id="chat-view-hint" class="chat-view-hint">نمایش پیام‌ها، تصمیم‌گیری‌های شورا و مکالمات زندهٔ ساب‌ایجنت‌ها در این نشست.</p>
+              </div>
+              <div id="chat-live-activity-strip" class="chat-live-activity-strip hidden" aria-live="polite"></div>
+              <div id="chat-messages" class="chat-messages" aria-live="polite" aria-relevant="additions text"></div>
+              <div id="chat-subtasks" class="chat-subtasks-list" aria-live="polite" hidden></div>
+              <div id="chat-activity" class="chat-activity-list" aria-live="polite" hidden></div>
+              <div id="composer-orchestration-bar" class="composer-orchestration-bar" aria-label="نوار هدف‌گیری و نوع تعامل">
+                <div class="composer-target-group">
+                  <label for="composer-target-select">مخاطب:</label>
+                  <select id="composer-target-select" aria-label="انتخاب ساب‌ایجنت مخاطب">
+                    <option value="">همهٔ اعضای اتاق فکر (عمومی)</option>
+                    <option value="team-manager">مدیر تیم (team-manager)</option>
+                    <option value="council-architect">معمار شورا (council-architect)</option>
+                    <option value="council-critic">منتقد شورا (council-critic)</option>
+                    <option value="ui-frontend-designer">معمار رابط کاربری (ui-frontend-designer)</option>
+                    <option value="backend-auditor">ممیز بک‌اند (backend-auditor)</option>
+                    <option value="code-reviewer">بازبین کد (code-reviewer)</option>
+                    <option value="qa-reviewer">بازبین کیفیت (qa-reviewer)</option>
+                    <option value="visual-qa">بازبین بصری (visual-qa)</option>
+                    <option value="integration-reviewer">بازبین یکپارچگی (integration-reviewer)</option>
+                    <option value="research-scout">پژوهشگر مستندات (research-scout)</option>
+                    <option value="wp_technical_operator">اپراتور فنی وردپرس (wp_technical_operator)</option>
+                    <option value="ecommerce_seo_operator">متخصص سئو فروشگاهی (ecommerce_seo_operator)</option>
+                    <option value="data-intelligence-curator">کیوریتور داده و شواهد (data-intelligence-curator)</option>
+                    <option value="evidence-critical-reviewer">بازبین نقاد شواهد (evidence-critical-reviewer)</option>
+                    <option value="requirements-auditor">ممیز نیازمندی‌ها (requirements-auditor)</option>
+                    <option value="context-memory-curator">کیوریتور حافظه و کانتکست (context-memory-curator)</option>
+                    <option value="performance-cost-analyst">تحلیل‌گر کارایی و هزینه (performance-cost-analyst)</option>
+                  </select>
+                </div>
+                <div class="composer-mode-chips" role="group" aria-label="حالت پیام">
+                  <button type="button" class="mode-chip active" data-composer-mode="message" aria-pressed="true">💬 پیام</button>
+                  <button type="button" class="mode-chip" data-composer-mode="delegate" aria-pressed="false">📋 واگذاری تسک</button>
+                  <button type="button" class="mode-chip" data-composer-mode="critique" aria-pressed="false">⚔ ثبت نقد</button>
+                  <button type="button" class="mode-chip" data-composer-mode="question" aria-pressed="false">❓ پرسش فنی</button>
+                  <button type="button" class="mode-chip" data-composer-mode="vote" aria-pressed="false">🤝 رأی شورا</button>
+                </div>
+              </div>
+              <form id="message-form" class="message-composer"><textarea name="text" rows="1" maxlength="20000" placeholder="پیام بعدی را بنویس…" required></textarea><button class="primary-button" type="submit">ارسال <span aria-hidden="true">←</span></button></form>
+              <div class="chat-footnote">پیام‌ها، واگذاری‌ها و وضعیت ابزارها از رخدادهای واقعی ساب‌ایجنت‌ها می‌آیند.</div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="tab-team" class="tab-panel" aria-labelledby="team-title" hidden>
+        <div class="page-heading"><div><p class="eyebrow">نقش‌ها و مسئولیت‌ها</p><h1 id="team-title">اعضای تیم</h1><p>پروفایل‌ها نقش‌های آماده را نشان می‌دهند؛ وضعیت فعال بر اساس رخدادهای واقعی ساب‌ایجنت‌ها تغییر می‌کند.</p></div><span class="team-live-tag"><i></i><span id="team-live-count">۰ عضو فعال</span></span></div>
+        <div class="role-filters" role="group" aria-label="دسته‌بندی اعضای تیم">
+          <button type="button" data-role-category="all" aria-pressed="true">همهٔ نقش‌ها <small>۰</small></button>
+          <button type="button" data-role-category="core" aria-pressed="false">هستهٔ اتاق فکر <small>۰</small></button>
+          <button type="button" data-role-category="engineering" aria-pressed="false">طراحی و مهندسی <small>۰</small></button>
+          <button type="button" data-role-category="quality" aria-pressed="false">بازبینی و کیفیت <small>۰</small></button>
+          <button type="button" data-role-category="specialist" aria-pressed="false">تخصص‌های تکمیلی <small>۰</small></button>
+        </div>
+        <div id="team-grid" class="team-grid"></div>
+      </section>
+
+      <section id="tab-activity" class="tab-panel" aria-labelledby="activity-title" hidden>
+        <div class="page-heading"><div><p class="eyebrow">رخدادهای دریافتی از نشست زندهٔ پنل</p><h1 id="activity-title">جریان کار</h1><p>رخدادهای واقعیِ گفت‌وگوهای ساخته‌شده از همین اتاق، با زمان دریافت نمایش داده می‌شوند. پیام‌ها و ابزارهای زیرعامل‌ها به صورت زنده نمایش داده می‌شوند.</p></div><span class="event-count"><strong id="activity-count">۰</strong> رویداد</span></div>
+        <div class="activity-layout"><div id="activity-list" class="activity-list"><div class="empty-state">هنوز گفت‌وگویی از این اتاق شروع نشده؛ پس رخداد زنده‌ای برای نمایش نیست.</div></div><aside class="activity-side panel-card"><h2>چه چیزهایی ثبت می‌شود؟</h2><ul><li>شروع و پایان نوبت</li><li>پیام‌های قابل‌مشاهدهٔ عامل</li><li>نام ابزار، نوع فعالیت و وضعیت واقعی</li><li>همکاری زیرعامل‌ها و تغییرات ثبت‌شدهٔ فایل</li><li>درخواست اجازه و تصمیم کاربر</li></ul><p>درخواست‌ها و خروجی خام ابزار ذخیره نمی‌شوند. توکن‌های شناخته‌شده از متن نمایشی حذف می‌شوند.</p></aside></div>
+      </section>
+
+      <section id="tab-settings" class="tab-panel" aria-labelledby="settings-title" hidden>
+        <div class="page-heading"><div><p class="eyebrow">حدود اجرایی و نمایش</p><h1 id="settings-title">تنظیمات اتاق</h1><p>عدد هر نقش سقف دورهای مجاز است. عامل‌ها موظف‌اند کار را به محض کفایت شواهد تمام کنند.</p></div></div>
+        <div class="settings-layout"><form id="round-settings-form" class="panel-card settings-card"><div class="panel-heading"><div><p class="eyebrow">حاکمیت کار</p><h2>سقف دورها برای هر نقش</h2></div><span class="heading-icon">⌘</span></div><div id="round-limits" class="round-limits"></div><div class="settings-footer"><span>مقدار مجاز: ۱ تا ۵۰۰ دور</span><button class="primary-button" type="submit">ذخیرهٔ تغییرات</button></div><p id="settings-status" class="settings-status" role="status"></p></form><article class="panel-card settings-note"><h2>سیاست پایان کار</h2><p>اتاق فکر از همهٔ ظرفیت استفاده نمی‌کند. وقتی عامل فکر کند کار تمام است، بازبین مدیریتی نتیجه را بررسی می‌کند و عامل اصلی و بازبین نظرشان را جمع‌بندی می‌کنند.</p><p>اگر برآورد خوداظهاری زیر ۹۵٪ باشد، اتاق خلاصهٔ وضعیت، دلیل‌های ادامه، دلیل‌های توقف و پرسش تصمیم را برای کاربر می‌فرستد.</p><div class="confidence-badge"><strong>۹۵٪</strong><span>آستانهٔ پرسش از کاربر<br><small>برآورد عامل، نه سنجهٔ مستقل</small></span></div></article></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="approval-dialog" class="dialog-backdrop hidden" role="presentation">
+    <section class="approval-dialog" role="alertdialog" aria-modal="true" aria-labelledby="approval-title">
+      <div class="dialog-symbol">!</div><p class="eyebrow">تصمیم لازم است</p><h2 id="approval-title">اتاق فکر برای ادامه اجازه می‌خواهد</h2><p id="approval-reason"></p><div id="approval-questions" class="approval-questions hidden"></div><pre id="approval-command" class="approval-command" dir="ltr"></pre><div class="dialog-actions"><button id="approval-decline" class="secondary-button" type="button">رد کردن</button><button id="approval-accept" class="primary-button" type="button">اجازه برای همین درخواست</button></div><p id="approval-footnote" class="dialog-footnote">این تصمیم فقط برای همین درخواست است؛ هیچ دسترسی دائمی ثبت نمی‌شود.</p>
+    </section>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

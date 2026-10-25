@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Reviewer profile avatar">
+  <title>Reviewer — shield check avatar</title>
+  <circle cx="64" cy="64" r="60" fill="#B75C67"/>
+  <path d="M64 27 95 39v23c0 20-13 33-31 42C46 95 33 82 33 62V39l31-12Z" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="6"/>
+  <path d="m48 63 11 11 22-24" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="7"/>
+</svg>

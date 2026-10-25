@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Think Tank composer icon">
+  <title>Think Tank — team coordination icon</title>
+  <circle cx="64" cy="64" r="57" fill="#347F76"/>
+  <path d="M64 28v24m0 24v24M28 64h24m24 0h24M39 39l17 17m16 16 17 17m0-50L73 56M56 72 39 89" stroke="#fff" stroke-linecap="round" stroke-width="5"/>
+  <circle cx="64" cy="64" r="18" fill="#347F76" stroke="#fff" stroke-width="5"/>
+  <circle cx="64" cy="64" r="6" fill="#E8C27A"/>
+  <circle cx="64" cy="28" r="7" fill="#E8C27A"/>
+  <circle cx="100" cy="64" r="7" fill="#E8C27A"/>
+  <circle cx="64" cy="100" r="7" fill="#E8C27A"/>
+  <circle cx="28" cy="64" r="7" fill="#E8C27A"/>
+</svg>

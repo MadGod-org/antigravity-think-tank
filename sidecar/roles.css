@@ -1,0 +1,16 @@
+.role-filters{display:flex;gap:7px;overflow-x:auto;padding:0 0 12px;scrollbar-width:thin}
+.role-filters button{display:flex;align-items:center;gap:8px;min-height:36px;white-space:nowrap;border:1px solid var(--line);border-radius:11px;background:var(--surface);color:var(--muted);padding:6px 11px;font-size:10px;transition:background var(--motion),color var(--motion),border-color var(--motion)}
+.role-filters button:hover,.role-filters button[aria-pressed="true"]{color:var(--accent);background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 38%,var(--line))}
+.role-filters small{display:grid;place-items:center;min-width:19px;height:19px;border-radius:7px;background:var(--surface-raised);color:var(--faint);font-size:9px}
+.team-avatar{position:relative;flex:none}
+.team-avatar-icon{position:absolute;left:2px;bottom:2px;min-width:19px;height:19px;padding:0 3px;border:2px solid var(--surface);border-radius:7px;background:var(--accent-strong);color:#fff;display:grid;place-items:center;font-size:11px;line-height:1}
+.team-skills{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+.skill-chip{border:1px solid var(--line);border-radius:30px;background:var(--surface-2);color:var(--faint);padding:2px 7px;font-size:8px;unicode-bidi:plaintext;text-align:center}
+.limit-group{border:1px solid var(--line);border-radius:12px;background:var(--surface-2);margin-bottom:9px;overflow:hidden}
+.limit-group>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:9px 11px;color:var(--text);font-size:11px;font-weight:700}
+.limit-group>summary::-webkit-details-marker{display:none}
+.limit-group>summary:after{content:"＋";color:var(--accent);font-size:13px}
+.limit-group[open]>summary:after{content:"−"}
+.limit-group>summary small{margin-right:auto;margin-left:9px;color:var(--faint);font-size:9px;font-weight:400}
+.limit-group-rows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:0 9px 9px}
+@media(max-width:620px){.role-filters{margin-inline:-3px;padding-inline:3px 0}.limit-group-rows{grid-template-columns:1fr}}

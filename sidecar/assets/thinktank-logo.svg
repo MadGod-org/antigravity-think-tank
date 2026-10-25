@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Think Tank plugin logo">
+  <title>Think Tank — connected minds</title>
+  <rect x="3" y="3" width="122" height="122" rx="34" fill="#347F76"/>
+  <circle cx="64" cy="64" r="39" fill="none" stroke="#fff" stroke-opacity=".32" stroke-width="3"/>
+  <path d="M50 45c-8 0-14 6-14 14 0 5 3 9 7 12v11h22V52c-3-5-8-7-15-7Zm28 0c8 0 14 6 14 14 0 5-3 9-7 12v11H63V52c3-5 8-7 15-7Z" fill="none" stroke="#fff" stroke-linejoin="round" stroke-width="5"/>
+  <path d="M48 60h8m-8 8h8m16-8h8m-8 8h8M64 52v37m-9 0h18m-15 8h12" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="4"/>
+  <circle cx="29" cy="34" r="6" fill="#E8C27A"/>
+  <circle cx="99" cy="34" r="6" fill="#E8C27A"/>
+  <circle cx="29" cy="94" r="6" fill="#E8C27A"/>
+  <circle cx="99" cy="94" r="6" fill="#E8C27A"/>
+</svg>
