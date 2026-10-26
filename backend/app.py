@@ -29,7 +29,7 @@ from governance import (
 
 STATE_FILE = os.environ.get(
     "THINKTANK_STATE_FILE",
-    os.path.join(os.path.expanduser("~"), ".thinktank", "think_tank_live_state.json"),
+    os.path.join(os.path.expanduser("~"), ".gemini", "config", "think_tank_live_state.json"),
 )
 SYNC_DB_FILE = os.environ.get(
     "THINKTANK_SYNC_DB", os.path.join(os.path.dirname(STATE_FILE), "think_tank_sync.sqlite3")
@@ -524,34 +524,142 @@ def get_roles():
     return {"roles": load_role_catalog()}
 
 
+def is_meaningful_conversation(cid: str, conv: Dict[str, Any], current_cid: str) -> bool:
+    if cid == current_cid:
+        return True
+    tt = conv.get("thinkTank", {})
+    project = (tt.get("project") or "").strip()
+    directive = (tt.get("directive") or "").strip()
+    messages = conv.get("messages", [])
+    subtasks = conv.get("subtasks", [])
+    proposal = conv.get("proposal")
+    return bool(project or directive or messages or subtasks or proposal)
+
+
+def _build_conv_row(cid: str, c: Dict[str, Any], target_cid: str) -> Dict[str, Any]:
+    tt = c.get("thinkTank", {})
+    last_msg_ts = c.get("messages", [])[-1].get("timestamp") if c.get("messages") else None
+    last_tool_ts = c.get("telemetry", {}).get("toolCalls", [])[-1].get("timestamp") if c.get("telemetry", {}).get("toolCalls") else None
+    updated_at = c.get("updatedAt") or c.get("updated_at") or last_msg_ts or last_tool_ts or 0
+    is_current = (cid == target_cid)
+    p_name = tt.get("project")
+    if not p_name:
+        p_name = "مکالمه جاری" if is_current else "اتاق فکر بدون عنوان"
+    return {
+        "id": cid,
+        "isCurrent": is_current,
+        "projectScope": "bound" if c.get("projectId") else "unassigned",
+        "project": p_name,
+        "directive": tt.get("directive", "اتاق فکر فعال"),
+        "phase": tt.get("phase", "اتاق فکر فعال"),
+        "round": tt.get("round", 1 if is_current else 0),
+        "maxRounds": tt.get("maxRounds", 50),
+        "progress": tt.get("progress", 0),
+        "status": tt.get("status", "ACTIVE"),
+        "messagesCount": len(c.get("messages", [])),
+        "subtasksCount": len(c.get("subtasks", [])),
+        "updated_at": updated_at,
+    }
+
+
+@app.post("/api/host/active-session")
+def set_active_session(payload: Dict[str, Any] = Body(...)):
+    global active_conv_id
+    cid = payload.get("conversationId")
+    if cid and isinstance(cid, str):
+        cid = cid.strip()
+        active_conv_id = cid
+        conv = get_or_create_conversation(cid)
+        pid = payload.get("projectId")
+        if pid and isinstance(pid, str):
+            conv["projectId"] = pid.strip()
+        try:
+            persisted_state["activeConversationId"] = cid
+            save_persisted_state()
+        except Exception:
+            pass
+        return {"status": "ok", "activeConversationId": active_conv_id}
+    return {"status": "error", "message": "Invalid conversationId"}
+
+
+@app.get("/api/host/active-session")
+@app.get("/api/host/context")
+def get_active_session():
+    global active_conv_id
+    active_file = os.path.expanduser("~/.gemini/config/active_antigravity_session.json")
+    if os.path.exists(active_file):
+        try:
+            with open(active_file, "r", encoding="utf-8") as f:
+                sdata = json.load(f)
+                if sdata.get("conversationId"):
+                    active_conv_id = sdata["conversationId"].strip()
+        except Exception:
+            pass
+    conv = conversations_store.get(active_conv_id, {})
+    return {
+        "conversationId": active_conv_id,
+        "projectId": conv.get("projectId"),
+        "project": conv.get("thinkTank", {}).get("project"),
+        "status": conv.get("thinkTank", {}).get("status", "ACTIVE"),
+    }
+
+
 @app.get("/api/conversations")
 def list_conversations():
     """Return selectable session metadata without loading or creating a session."""
+    global active_conv_id
+    active_file = os.path.expanduser("~/.gemini/config/active_antigravity_session.json")
+    if os.path.exists(active_file):
+        try:
+            with open(active_file, "r", encoding="utf-8") as f:
+                sdata = json.load(f)
+                if sdata.get("conversationId"):
+                    active_conv_id = sdata["conversationId"].strip()
+        except Exception:
+            pass
+
+    target_cid = active_conv_id or "default"
     rows = []
-    project_id = request_project_id.get()
-    for cid, conv in conversations_store.items():
-        if cid == "default" or not project_matches(conv, project_id):
+
+    def _get_sort_ts(item):
+        c = item[1]
+        last_msg = c.get("messages", [])[-1].get("timestamp") if c.get("messages") else None
+        last_tool = c.get("telemetry", {}).get("toolCalls", [])[-1].get("timestamp") if c.get("telemetry", {}).get("toolCalls") else None
+        return c.get("updatedAt") or c.get("updated_at") or last_msg or last_tool or 0
+
+    sorted_convs = sorted(conversations_store.items(), key=_get_sort_ts, reverse=True)
+    for cid, conv in sorted_convs:
+        if cid == "default" or not is_meaningful_conversation(cid, conv, target_cid):
             continue
-        think_tank = conv.get("thinkTank", {})
-        last_msg_ts = conv.get("messages", [])[-1].get("timestamp") if conv.get("messages") else None
-        updated_at = conv.get("updatedAt") or conv.get("updated_at") or last_msg_ts or 0
-        rows.append({
-            "id": cid,
-            "projectScope": "unassigned" if not conv.get("projectId") else "bound",
-            "project": think_tank.get("project") or "نشست بدون عنوان",
-            "phase": think_tank.get("phase") or "اتاق فکر فعال",
-            "round": think_tank.get("round", 0),
-            "maxRounds": think_tank.get("maxRounds", 50),
-            "progress": think_tank.get("progress", 0),
-            "status": think_tank.get("status", "UNKNOWN"),
-            "updated_at": updated_at,
-        })
+        rows.append(_build_conv_row(cid, conv, target_cid))
+
+    curr_idx = next((i for i, r in enumerate(rows) if r["id"] == target_cid), None)
+    if curr_idx is not None and curr_idx > 0:
+        c_item = rows.pop(curr_idx)
+        c_item["isCurrent"] = True
+        rows.insert(0, c_item)
+    elif curr_idx is None and target_cid in conversations_store:
+        rows.insert(0, _build_conv_row(target_cid, conversations_store[target_cid], target_cid))
+
     return {"conversations": rows}
 
 
 @app.get("/api/status")
 def get_status(convId: Optional[str] = Query(None)):
     global active_conv_id
+
+    # Resolve active conversation from disk if not explicitly passed
+    if not convId:
+        active_file = os.path.expanduser("~/.gemini/config/active_antigravity_session.json")
+        if os.path.exists(active_file):
+            try:
+                with open(active_file, "r", encoding="utf-8") as f:
+                    sdata = json.load(f)
+                    if sdata.get("conversationId"):
+                        active_conv_id = sdata["conversationId"].strip()
+            except Exception:
+                pass
+
     target_cid = convId or active_conv_id or "default"
     project_id = request_project_id.get()
     target_conv = conversations_store.get(target_cid)
@@ -560,51 +668,35 @@ def get_status(convId: Optional[str] = Query(None)):
     elif project_id and not target_conv:
         target_conv = get_or_create_conversation(target_cid)
         target_conv["projectId"] = project_id
-    if not project_matches(conversations_store.get(target_cid, {}), project_id):
-        raise HTTPException(status_code=403, detail="This session is not assigned to the active project.")
+
     check_and_reload_state(target_cid)
     conv = get_or_create_conversation(target_cid)
 
-
     # Known conversation list for switcher UI
     conv_list = []
-    project_id = request_project_id.get()
-    for cid, c in conversations_store.items():
-        if not project_matches(c, project_id):
-            continue
-        tt = c.get("thinkTank", {})
-        last_msg_ts = c.get("messages", [])[-1].get("timestamp") if c.get("messages") else None
-        last_tool_ts = c.get("telemetry", {}).get("toolCalls", [])[-1].get("timestamp") if c.get("telemetry", {}).get("toolCalls") else None
-        updated_at = c.get("updatedAt") or c.get("updated_at") or last_msg_ts or last_tool_ts or 0
-        conv_list.append({
-            "id": cid,
-            "projectScope": "unassigned" if not c.get("projectId") else "bound",
-            "project": tt.get("project", "نشست فعال"),
-            "directive": tt.get("directive", "در حال آماده‌سازی و تحلیل"),
-            "phase": tt.get("phase", "اتاق فکر فعال"),
-            "round": tt.get("round", 1),
-            "maxRounds": tt.get("maxRounds", 50),
-            "progress": tt.get("progress", 0),
-            "status": tt.get("status", "ACTIVE"),
-            "updated_at": updated_at,
-        })
-    if not any(c["id"] == target_cid for c in conv_list):
-        tt_curr = conv.get("thinkTank", {})
-        last_msg_ts_curr = conv.get("messages", [])[-1].get("timestamp") if conv.get("messages") else None
-        updated_at_curr = conv.get("updatedAt") or conv.get("updated_at") or last_msg_ts_curr or 0
-        conv_list.insert(0, {
-            "id": target_cid,
-            "project": tt_curr.get("project", "Active Session"),
-            "directive": tt_curr.get("directive", "در حال تحلیل"),
-            "phase": tt_curr.get("phase", "اتاق فکر فعال"),
-            "round": tt_curr.get("round", 1),
-            "maxRounds": tt_curr.get("maxRounds", 50),
-            "progress": tt_curr.get("progress", 0),
-            "status": tt_curr.get("status", "ACTIVE"),
-            "updated_at": updated_at_curr,
-        })
 
-    cursor = sync_store.cursor(target_cid)
+    def _get_sort_ts(item):
+        c = item[1]
+        last_msg = c.get("messages", [])[-1].get("timestamp") if c.get("messages") else None
+        last_tool = c.get("telemetry", {}).get("toolCalls", [])[-1].get("timestamp") if c.get("telemetry", {}).get("toolCalls") else None
+        return c.get("updatedAt") or c.get("updated_at") or last_msg or last_tool or 0
+
+    sorted_convs = sorted(conversations_store.items(), key=_get_sort_ts, reverse=True)
+    for cid, c in sorted_convs:
+        if cid == "default" or not is_meaningful_conversation(cid, c, target_cid):
+            continue
+        conv_list.append(_build_conv_row(cid, c, target_cid))
+
+    curr_idx = next((i for i, c in enumerate(conv_list) if c["id"] == target_cid), None)
+    if curr_idx is not None and curr_idx > 0:
+        c_item = conv_list.pop(curr_idx)
+        c_item["isCurrent"] = True
+        conv_list.insert(0, c_item)
+    elif curr_idx is None:
+        conv_list.insert(0, _build_conv_row(target_cid, conv, target_cid))
+
+
+        cursor = sync_store.cursor(target_cid)
     imported_snapshot = cursor["last_event_type"] in {"SNAPSHOT_IMPORTED"}
     state_age_seconds = max(0.0, time.time() - float(cursor.get("updated_at") or time.time()))
     if imported_snapshot:

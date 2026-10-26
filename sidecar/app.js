@@ -27,6 +27,8 @@
   // Global Application State
   const state = {
     activeConvId: null,
+    hostConvId: null,
+    threadSearchQuery: '',
     project: '',
     phase: 'اتاق فکر فعال',
     round: 1,
@@ -345,17 +347,25 @@
   function renderConversationsRail() {
     const items = state.conversations.length ? state.conversations : (state.activeConvId ? [{
       id: state.activeConvId,
-      project: state.project || 'نشست فعال',
+      isCurrent: true,
+      project: state.project || 'مکالمه جاری',
       directive: state.directive || 'در حال آماده‌سازی و تحلیل',
       status: state.status || 'ACTIVE',
     }] : []);
 
-    const sig = `${state.activeConvId}:${items.length}:${items.map((c) => `${c.id}:${c.status}:${c.project}`).join('|')}`;
+    const topbarLabel = $('#topbar-project-label');
+    if (topbarLabel) {
+      topbarLabel.textContent = state.project || (state.activeConvId === state.hostConvId ? t('مکالمه جاری') : t('پروژه فعال'));
+    }
+
+    const query = String(state.threadSearchQuery || '').trim().toLowerCase();
+    const sig = `${state.activeConvId}:${state.hostConvId}:${query}:${items.length}:${items.map((c) => `${c.id}:${c.status}:${c.project}`).join('|')}`;
     if (sig === signatures.rail) return;
     signatures.rail = sig;
 
     const list = $('#conversation-rail-list');
     const sidebarList = $('#thread-list');
+    const projectPickerList = $('#project-picker-list');
     const countEl = $('#rail-count');
     const threadCountEl = $('#thread-count');
 
@@ -366,40 +376,61 @@
     const sortedItems = [...items].sort((a, b) => {
       if (a.id === state.activeConvId) return -1;
       if (b.id === state.activeConvId) return 1;
+      if (a.isCurrent || a.id === state.hostConvId) return -1;
+      if (b.isCurrent || b.id === state.hostConvId) return 1;
       const tA = getEventTimeValue(a, 0);
       const tB = getEventTimeValue(b, 0);
       return tB - tA;
     });
 
+    const displayItems = query ? sortedItems.filter((conv) => {
+      const matchP = String(conv.project || '').toLowerCase().includes(query);
+      const matchD = String(conv.directive || '').toLowerCase().includes(query);
+      const matchS = String(conv.status || '').toLowerCase().includes(query);
+      const matchId = String(conv.id || '').toLowerCase().includes(query);
+      return matchP || matchD || matchS || matchId;
+    }) : sortedItems;
+
     const renderListInto = (container) => {
       if (!container) return;
       container.replaceChildren();
-      if (!sortedItems.length) {
+      if (!displayItems.length) {
         const empty = document.createElement('div');
         empty.className = 'sidebar-empty';
-        empty.textContent = t('در انتظار دریافت عنوان نشست');
+        empty.textContent = query ? t('موردی با این عبارت یافت نشد') : t('در انتظار دریافت عنوان نشست');
         container.append(empty);
         return;
       }
-      for (const conv of sortedItems) {
+      for (const conv of displayItems) {
         const isSelected = conv.id === state.activeConvId;
+        const isHostCurrent = Boolean(conv.isCurrent || conv.id === state.hostConvId);
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = `thread-link${isSelected ? ' selected' : ''}`;
+        btn.className = `thread-link${isSelected ? ' selected' : ''}${isHostCurrent ? ' host-current' : ''}`;
         btn.setAttribute('aria-selected', isSelected ? 'true' : 'false');
         btn.dataset.convId = conv.id;
-        const glyph = isSelected ? '●' : '▤';
-        const title = escapeHtml(conv.project || conv.title || 'گفت‌وگو');
+        const glyph = isSelected ? '●' : (isHostCurrent ? '🎯' : '▤');
+        const title = escapeHtml(conv.project || conv.title || (isHostCurrent ? t('مکالمه جاری') : 'گفت‌وگو'));
         const snippet = escapeHtml(conv.directive || conv.task || ActivityHelper.statusLabel(conv.status, state.language));
+        const statusLabel = escapeHtml(ActivityHelper.statusLabel(conv.status, state.language));
+        const currentBadge = isHostCurrent ? `<span class="rail-current-badge">${escapeHtml(t('مکالمه جاری'))}</span>` : '';
+        const statusTag = `<span class="rail-status-tag ${String(conv.status || 'ACTIVE').toLowerCase()}">${statusLabel}</span>`;
         btn.innerHTML = `
           <span class="thread-glyph">${glyph}</span>
-          <span>
-            <strong style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">${title}</strong>
+          <span style="display:block;min-width:0;width:100%;">
+            <span class="thread-title-row" style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+              <strong style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-block;max-width:65%;">${title}</strong>
+              <span>${currentBadge}${statusTag}</span>
+            </span>
             <small style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">${snippet}</small>
           </span>
         `;
         btn.addEventListener('click', () => {
           switchConversation(conv.id);
+          const pDrop = $('#project-picker-dropdown');
+          if (pDrop) pDrop.classList.add('hidden');
+          const pChip = $('#current-project-chip');
+          if (pChip) pChip.setAttribute('aria-expanded', 'false');
         });
         container.append(btn);
       }
@@ -407,9 +438,39 @@
 
     renderListInto(list);
     renderListInto(sidebarList);
+
+    // Also populate Topbar Quick Project Picker
+    if (projectPickerList) {
+      projectPickerList.replaceChildren();
+      for (const conv of sortedItems.slice(0, 15)) {
+        const isSelected = conv.id === state.activeConvId;
+        const isHostCurrent = Boolean(conv.isCurrent || conv.id === state.hostConvId);
+        const itemBtn = document.createElement('button');
+        itemBtn.type = 'button';
+        itemBtn.className = `picker-item${isSelected ? ' active' : ''}`;
+        const title = escapeHtml(conv.project || (isHostCurrent ? t('مکالمه جاری') : 'پروژه'));
+        const statusLabel = escapeHtml(ActivityHelper.statusLabel(conv.status, state.language));
+        const currentBadge = isHostCurrent ? `<span class="rail-current-badge">${escapeHtml(t('مکالمه جاری'))}</span>` : '';
+        itemBtn.innerHTML = `
+          <span class="picker-item-title">
+            <span>${isSelected ? '● ' : ''}${title}</span>
+            <span>${currentBadge}<span class="rail-status-tag ${String(conv.status || '').toLowerCase()}">${statusLabel}</span></span>
+          </span>
+          <span class="picker-item-sub">${escapeHtml(conv.directive || '')}</span>
+        `;
+        itemBtn.addEventListener('click', () => {
+          switchConversation(conv.id);
+          const pDrop = $('#project-picker-dropdown');
+          if (pDrop) pDrop.classList.add('hidden');
+          const pChip = $('#current-project-chip');
+          if (pChip) pChip.setAttribute('aria-expanded', 'false');
+        });
+        projectPickerList.append(itemBtn);
+      }
+    }
   }
 
-  // Build a sleek collapsible drawer (<details class="tt-drawer ...">) for thoughts, critiques, questions, and full reports
+    // Build a sleek collapsible drawer (<details class="tt-drawer ...">) for thoughts, critiques, questions, and full reports
   function buildDrawerHtml(kindClass, icon, titleText, bodyText, isOpen = false) {
     const cleanBody = String(bodyText || '').trim();
     if (!cleanBody) return '';
@@ -2130,7 +2191,52 @@
   }
 
   function bindUI() {
-    // Nav tabs
+    // Thread Search Box in Sidebar
+    const searchThreadsInput = $('#search-threads');
+    if (searchThreadsInput) {
+      searchThreadsInput.addEventListener('input', (e) => {
+        state.threadSearchQuery = (e.target.value || '').trim().toLowerCase();
+        signatures.rail = '';
+        renderConversationsRail();
+      });
+    }
+
+    // Topbar Quick Project Switcher Dropdown
+    const projectChip = $('#current-project-chip');
+    const projectDropdown = $('#project-picker-dropdown');
+    if (projectChip && projectDropdown) {
+      projectChip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !projectDropdown.classList.contains('hidden');
+        projectDropdown.classList.toggle('hidden', isOpen);
+        projectChip.setAttribute('aria-expanded', !isOpen ? 'true' : 'false');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!projectDropdown.classList.contains('hidden') && !e.target.closest('#project-quick-picker')) {
+          projectDropdown.classList.add('hidden');
+          projectChip.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+
+    // Quick Jump Buttons to Current Host Conversation
+    const jumpToCurrentBtns = [$('#picker-current-conv-btn'), $('#jump-to-current-btn')];
+    jumpToCurrentBtns.forEach((btn) => {
+      if (btn) {
+        btn.addEventListener('click', () => {
+          if (state.hostConvId) {
+            switchConversation(state.hostConvId);
+          }
+          if (projectDropdown) {
+            projectDropdown.classList.add('hidden');
+            if (projectChip) projectChip.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+    });
+
+        // Nav tabs
     $$('.primary-nav .nav-item').forEach((btn) => {
       btn.addEventListener('click', () => {
         setTab(btn.dataset.tab);
@@ -2443,23 +2549,34 @@
     // 1. Resolve Active Conversation ID
     const urlParams = new URLSearchParams(window.location.search);
     const paramConvId = urlParams.get('convId') || urlParams.get('host_thread_id');
-    if (paramConvId) {
-      state.activeConvId = paramConvId.trim();
-    } else if (window.__ANTIGRAVITY_HOST_CONTEXT__?.conversationId) {
-      state.activeConvId = window.__ANTIGRAVITY_HOST_CONTEXT__.conversationId.trim();
-    } else if (window.sidecar?.conversationId) {
-      state.activeConvId = window.sidecar.conversationId.trim();
-    } else {
+    
+    let detectedHostCid = window.__ANTIGRAVITY_HOST_CONTEXT__?.conversationId || window.sidecar?.conversationId;
+    if (!detectedHostCid) {
       try {
         const ctx = await apiGet('/api/host/context');
-        if (ctx && ctx.conversationId) state.activeConvId = ctx.conversationId.trim();
+        if (ctx && ctx.conversationId) detectedHostCid = ctx.conversationId.trim();
+      } catch (_) {}
+    }
+    
+    state.hostConvId = detectedHostCid ? detectedHostCid.trim() : null;
+    
+    if (paramConvId) {
+      state.activeConvId = paramConvId.trim();
+    } else if (state.hostConvId) {
+      state.activeConvId = state.hostConvId;
+    } else {
+      try {
+        const statusData = await apiGet('/api/status');
+        if (statusData && statusData.convId) {
+          state.activeConvId = statusData.convId;
+        }
       } catch (_) {}
     }
     if (!state.activeConvId) {
-      state.activeConvId = '<conversation-id>';
+      state.activeConvId = '578e8764-3916-48c1-802f-9b5df9f06f03';
     }
 
-    // 2. Load Roles Catalog
+        // 2. Load Roles Catalog
     try {
       const rolesData = await apiGet('/api/roles');
       if (Array.isArray(rolesData.roles)) {

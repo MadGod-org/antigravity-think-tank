@@ -3526,3 +3526,248 @@ details.tt-drawer[open] .tt-drawer-chevron::after {
 
 
 
+
+
+/* --- Quick Project Picker & Switcher --- */
+.project-quick-picker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-inline-start: 12px;
+}
+
+.current-project-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--motion);
+}
+
+.current-project-chip:hover {
+  background: var(--surface-raised);
+  border-color: var(--accent);
+}
+
+.project-dot-pulse {
+  color: #10b981;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.chip-chevron {
+  font-size: 10px;
+  color: var(--muted);
+  transition: transform var(--motion);
+}
+
+.current-project-chip[aria-expanded="true"] .chip-chevron {
+  transform: rotate(180deg);
+}
+
+.project-picker-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: 320px;
+  max-height: 380px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: dropdownIn 0.15s ease-out;
+}
+
+@keyframes dropdownIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.picker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 12px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.picker-current-badge-btn {
+  background: #10b98122;
+  border: 1px solid #10b98155;
+  color: #10b981;
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.picker-current-badge-btn:hover {
+  background: #10b98133;
+}
+
+.picker-list {
+  overflow-y: auto;
+  max-height: 320px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.picker-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  text-align: right;
+  cursor: pointer;
+  transition: background var(--motion);
+}
+
+.picker-item:hover {
+  background: var(--surface-2);
+}
+
+.picker-item.active {
+  background: var(--accent-soft);
+  border-inline-start: 3px solid var(--accent);
+}
+
+.picker-item-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.picker-item-sub {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+/* --- Search Box in Sidebar --- */
+.thread-search-box {
+  padding: 4px 6px 8px 6px;
+}
+
+.thread-search-input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 6px 10px;
+  font-size: 11px;
+  outline: none;
+  transition: border-color var(--motion);
+}
+
+.thread-search-input:focus {
+  border-color: var(--accent);
+}
+
+/* --- Badges & Tags on Project Items --- */
+.rail-current-badge {
+  display: inline-block;
+  background: #10b98122;
+  border: 1px solid #10b98155;
+  color: #10b981;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  margin-inline-start: 5px;
+}
+
+.rail-status-tag {
+  display: inline-block;
+  font-size: 9px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  margin-inline-start: 4px;
+}
+
+.rail-status-tag.active {
+  background: #3b82f622;
+  color: #60a5fa;
+  border: 1px solid #3b82f644;
+}
+
+.rail-status-tag.completed {
+  background: #10b98122;
+  color: #34d399;
+  border: 1px solid #10b98144;
+}
+
+.rail-status-tag.awaiting_approval {
+  background: #f59e0b22;
+  color: #fbbf24;
+  border: 1px solid #f59e0b44;
+}
+
+.rail-status-tag.disconnected {
+  background: #6b728022;
+  color: #9ca3af;
+  border: 1px solid #6b728044;
+}
+
+.jump-to-current-btn {
+  background: #10b98122;
+  border: 1px solid #10b98144;
+  color: #10b981;
+  font-size: 10px;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 2px 9px;
+  cursor: pointer;
+  margin-inline-start: auto;
+}
+
+.jump-to-current-btn:hover {
+  background: #10b98133;
+}
+
+.host-ref-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.thread-link.host-current {
+  border-inline-start: 2px solid #10b981;
+}
+
+.thread-link .thread-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}

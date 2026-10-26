@@ -17,11 +17,30 @@ let backendStartup = null;
 
 const readLocal = (name) => readFileSync(join(HERE, name), 'utf8');
 
+function getActiveSessionContext() {
+  let cid = app.config?.conversationId || '';
+  let pid = app.config?.projectId || '';
+  if (!cid) {
+    try {
+      const activeFile = join(process.env.USERPROFILE || process.env.HOME || homedir(), '.gemini', 'config', 'active_antigravity_session.json');
+      if (existsSync(activeFile)) {
+        const d = JSON.parse(readFileSync(activeFile, 'utf8'));
+        if (d?.conversationId) {
+          cid = d.conversationId;
+          pid = d.projectId || pid;
+        }
+      }
+    } catch (_) {}
+  }
+  return { conversationId: cid, projectId: pid };
+}
+
 // 1. Root and Core Static Assets
 const serveRoot = () => {
   let html = readLocal('index.html');
-  const hostCid = app.config?.conversationId || '';
-  const hostPid = app.config?.projectId || '';
+  const ctx = getActiveSessionContext();
+  const hostCid = ctx.conversationId;
+  const hostPid = ctx.projectId;
   const injection = `<script>
     window.__ANTIGRAVITY_HOST_CONTEXT__ = {
       conversationId: ${JSON.stringify(hostCid)},
@@ -135,10 +154,8 @@ app.api('/api/roles', () => ({ roles: roleCatalog }), 'GET');
 app.api('/roles', () => ({ roles: roleCatalog }), 'GET');
 
 // 5. Host Context
-app.api('/api/host/context', () => ({
-  conversationId: app.config.conversationId || null,
-  projectId: app.config.projectId || null,
-}), 'GET');
+app.api('/api/host/context', () => getActiveSessionContext(), 'GET');
+app.api('/host/context', () => getActiveSessionContext(), 'GET');
 
 // 6. Backend Forwarding
 async function forward(path, method, data) {

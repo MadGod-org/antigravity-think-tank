@@ -31,7 +31,10 @@
         <button class="nav-item" type="button" data-tab="settings"><span class="nav-icon">⚙</span><span>تنظیمات</span></button>
       </nav>
       <div class="sidebar-section">
-        <div class="section-label"><span>گفت‌وگوهای ساخته‌شده از پنل</span><span class="section-rule"></span></div>
+        <div class="section-label"><span id="sidebar-projects-heading">پروژه‌ها و اتاق‌های فکر</span><span class="section-rule"></span></div>
+        <div class="thread-search-box">
+          <input id="search-threads" class="thread-search-input" type="search" placeholder="🔍 جستجوی پروژه یا اتاق فکر..." aria-label="جستجوی پروژه یا اتاق فکر">
+        </div>
         <div id="thread-list" class="thread-list"><div class="sidebar-empty">هنوز گفت‌وگویی ساخته نشده</div></div>
       </div>
       <div class="sidebar-footer">
@@ -42,7 +45,23 @@
 
     <main class="main-area">
       <header class="topbar">
-        <div class="breadcrumbs"><span>اتاق فکر</span><span class="crumb-separator">/</span><strong id="breadcrumb-current">نمای کلی</strong></div>
+        <div class="breadcrumbs">
+          <span>اتاق فکر</span><span class="crumb-separator">/</span><strong id="breadcrumb-current">نمای کلی</strong>
+          <div class="project-quick-picker" id="project-quick-picker">
+            <button id="current-project-chip" class="current-project-chip" type="button" aria-expanded="false" title="تعویض سریع پروژه یا اتاق فکر">
+              <span class="project-dot-pulse">●</span>
+              <span id="topbar-project-label">پروژه فعال</span>
+              <span class="chip-chevron">▾</span>
+            </button>
+            <div id="project-picker-dropdown" class="project-picker-dropdown hidden" role="menu">
+              <div class="picker-header">
+                <span>انتخاب سریع پروژه / اتاق فکر</span>
+                <button id="picker-current-conv-btn" class="picker-current-badge-btn" type="button" title="رفتن به اتاق فکر مکالمه جاری">🎯 مکالمه جاری</button>
+              </div>
+              <div id="project-picker-list" class="picker-list"></div>
+            </div>
+          </div>
+        </div>
         <div class="topbar-actions">
           <span class="live-pill"><i></i> جریان زنده</span>
           <button id="language-toggle" class="language-toggle" type="button" aria-label="تغییر زبان به انگلیسی" title="تغییر زبان پنل">English</button>
@@ -162,13 +181,17 @@
       </section>
 
       <section id="tab-conversations" class="tab-panel" aria-labelledby="conversations-title" hidden>
-        <div class="page-heading"><div><p class="eyebrow">گفت‌وگوی جاری و زیرعامل‌ها</p><h1 id="conversations-title">گفت‌وگوها</h1><p>نام گفت‌وگوی اصلی بالا مشخص است؛ فهرست کنار صفحه گفت‌وگوهای ساخته‌شده در همین نشست را نشان می‌دهد.</p></div><button class="secondary-button" type="button" data-action="new-thread">＋ گفت‌وگوی تازه</button></div>
+        <div class="page-heading"><div><p class="eyebrow">اتاق‌های فکر، گفت‌وگوی جاری و ساب‌ایجنت‌ها</p><h1 id="conversations-title">پروژه‌ها و گفت‌وگوها</h1><p>فهرست زیر تمام پروژه‌ها و اتاق‌های فکر فعال اکوسیستم را نمایش می‌دهد؛ اتاق مکالمه جاری در صدر قرار دارد.</p></div><button class="secondary-button" type="button" data-action="new-thread">＋ گفت‌وگوی تازه</button></div>
         <div class="conversation-layout">
           <aside class="conversation-rail">
             <section id="host-thread-reference" class="host-thread-reference hidden" aria-labelledby="host-thread-reference-title">
-              <span class="host-reference-label">گفت‌وگوی اصلی این فعالیت</span><strong id="host-thread-reference-title" dir="auto"></strong><small id="host-thread-reference-id" dir="ltr"></small><span class="host-reference-note">پیام‌های این گفت‌وگوی اصلی در نشست ثبت می‌شوند؛ فهرست زیر فقط مکالمه‌های همین نشست میزبان را دارد.</span>
+              <div class="host-ref-header">
+                <span class="host-reference-label">گفت‌وگوی اصلی این فعالیت</span>
+                <button id="jump-to-current-btn" class="jump-to-current-btn" type="button">🎯 بازگشت به این مکالمه</button>
+              </div>
+              <strong id="host-thread-reference-title" dir="auto"></strong><small id="host-thread-reference-id" dir="ltr"></small><span class="host-reference-note">پیام‌های این گفت‌وگوی اصلی در نشست ثبت می‌شوند؛ فهرست زیر پروژه‌ها و اتاق‌های فکر را نشان می‌دهد.</span>
             </section>
-            <div class="rail-heading"><strong>گفت‌وگوهای ساخته‌شده در پنل</strong><span id="rail-count">۰</span></div><div id="conversation-rail-list" class="conversation-rail-list"></div>
+            <div class="rail-heading"><strong>پروژه‌ها و اتاق‌های فکر</strong><span id="rail-count">۰</span></div><div id="conversation-rail-list" class="conversation-rail-list"></div>
           </aside>
           <section class="chat-panel" aria-label="نمای مکالمه">
             <div id="chat-empty" class="chat-empty"><div class="empty-glyph">▤</div><h2>گفت‌وگویی انتخاب نشده</h2><p>یک گفت‌وگوی تازه بساز یا از فهرست کناری یکی را انتخاب کن.</p></div>

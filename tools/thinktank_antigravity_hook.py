@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+import time
 from pathlib import Path
 import urllib.error
 import urllib.request
@@ -13,6 +14,8 @@ from typing import Any
 
 
 API_URL = "http://127.0.0.1:8780/api/telemetry/host_tool"
+ACTIVE_SESSION_API = "http://127.0.0.1:8780/api/host/active-session"
+SESSION_FILE = Path.home() / ".gemini" / "config" / "active_antigravity_session.json"
 MAX_INPUT_BYTES = 2_000_000
 TOOLS_DIR = str(Path(__file__).resolve().parent)
 if TOOLS_DIR not in sys.path:
@@ -32,6 +35,55 @@ def _conversation_id(payload: dict[str, Any]) -> str | None:
     if not value or len(value) > 200 or not re.fullmatch(r"[A-Za-z0-9-]+", value):
         return None
     return value
+
+
+def record_active_session(conversation_id: str, payload: dict[str, Any]) -> None:
+    """Record the active Antigravity session so Think Tank automatically defaults to it."""
+    if not conversation_id:
+        return
+    project_id = payload.get("projectId") or payload.get("workspace")
+    data = {
+        "conversationId": conversation_id,
+        "projectId": project_id,
+        "timestamp": time.time(),
+    }
+    # 1. Write to local file atomically
+    try:
+        SESSION_FILE.parent.mkdir(parents=True, exist_ok=True)
+        tmp = SESSION_FILE.with_suffix(".tmp")
+        tmp.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+        tmp.replace(SESSION_FILE)
+    except Exception:
+        pass
+
+    # 2. Fast post to backend
+    if bridge_transport is not None:
+        try:
+            bridge_transport.api_post_fast(
+                "host/active-session",
+                data,
+                event_id=f"active-sess-{conversation_id}",
+                timeout=0.25,
+            )
+            return
+        except Exception:
+            pass
+
+    try:
+        body = json.dumps(data).encode("utf-8")
+        req = urllib.request.Request(
+            ACTIVE_SESSION_API,
+            data=body,
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=0.25) as resp:
+            resp.read(64)
+    except Exception:
+        pass
 
 
 def build_tool_event(payload: dict[str, Any]) -> dict[str, Any] | None:
@@ -72,7 +124,9 @@ def build_response(event_name: str, payload: dict[str, Any]) -> dict[str, Any]:
         conversation_id = _conversation_id(payload)
         if not conversation_id:
             return {}
+        record_active_session(conversation_id, payload)
         message = (
+            f"Antigravity conversation ID for this session: {conversation_id}. "
             "When using the Think Tank bridge in this session, include this exact value with --conv-id on every command."
         )
         return {"injectSteps": [{"ephemeralMessage": message}]}
@@ -126,6 +180,9 @@ def main(argv: list[str] | None = None) -> int:
         payload = {}
 
     if event_name == "post-tool-use":
+        conversation_id = _conversation_id(payload)
+        if conversation_id:
+            record_active_session(conversation_id, payload)
         event = build_tool_event(payload)
         if event:
             send_tool_event(event)
